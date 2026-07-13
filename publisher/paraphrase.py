@@ -2,6 +2,7 @@ import logging
 import httpx
 
 import sys
+from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from config import OPENAI_API_KEY, OPENAI_MODEL
@@ -17,6 +18,12 @@ def _get_api_url(key: str) -> str:
     if key.startswith("sk-or-"):
         return OPENROUTER_URL
     return OPENAI_URL
+
+
+def _fix_model(model: str, key: str) -> str:
+    if key.startswith("sk-or-") and not model.endswith(":free"):
+        return model
+    return model
 
 
 async def paraphrase_text(text: str) -> str:
