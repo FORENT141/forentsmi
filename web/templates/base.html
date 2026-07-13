@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TG News Bot{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="logo">
+            <span class="logo-icon">⚡</span>TG News Bot
+        </div>
+        <div class="nav-section">Menu</div>
+        <a href="/dashboard" class="{% if request.url.path == '/dashboard' %}active{% endif %}">
+            <span class="icon">📊</span><span>Dashboard</span>
+        </a>
+        <a href="/channels" class="{% if request.url.path == '/channels' %}active{% endif %}">
+            <span class="icon">📡</span><span>Channels</span>
+        </a>
+        <a href="/moderation" class="{% if request.url.path == '/moderation' %}active{% endif %}">
+            <span class="icon">✅</span><span>Moderation</span>
+        </a>
+        <a href="/history" class="{% if request.url.path == '/history' %}active{% endif %}">
+            <span class="icon">📋</span><span>History</span>
+        </a>
+        <a href="/settings" class="{% if request.url.path == '/settings' %}active{% endif %}">
+            <span class="icon">⚙️</span><span>Settings</span>
+        </a>
+        <a href="/logout" class="logout">
+            <span class="icon">🚪</span><span>Logout</span>
+        </a>
+    </nav>
+    <main class="content">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

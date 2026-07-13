@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Channels — TG News Bot{% endblock %}
+{% block content %}
+<h1>Channels</h1>
+
+<div class="panel">
+    <h3><span class="icon">➕</span> Add Channel</h3>
+    <form method="post" action="/channels/add" class="inline-form">
+        <input type="text" name="username" placeholder="channel_username" required>
+        <input type="text" name="title" placeholder="Title (optional)">
+        <button type="submit">Add Channel</button>
+    </form>
+</div>
+
+<div class="panel">
+    <h3><span class="icon">📡</span> Monitored Channels</h3>
+    {% for ch in channels %}
+    <div class="list-item">
+        <span class="status-dot {{ 'on' if ch.active else 'off' }}"></span>
+        <span class="item-channel">@{{ ch.username }}</span>
+        <span class="item-text">{{ ch.title or 'No title' }}</span>
+        <span class="badge badge-{{ 'active' if ch.active else 'inactive' }}">
+            {{ 'Active' if ch.active else 'Inactive' }}
+        </span>
+        <div class="item-actions">
+            <form method="post" action="/channels/toggle/{{ ch.username }}" style="display:inline">
+                <button type="submit" class="btn-sm">{{ 'Disable' if ch.active else 'Enable' }}</button>
+            </form>
+            <form method="post" action="/channels/remove/{{ ch.username }}" style="display:inline"
+                  onsubmit="return confirm('Remove @{{ ch.username }}?')">
+                <button type="submit" class="btn-sm btn-danger">Remove</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+    {% if not channels %}
+    <div class="empty-state">
+        <div class="empty-icon">📡</div>
+        <h3>No channels added yet</h3>
+        <p>Add a channel username above to start monitoring.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

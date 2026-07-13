@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Moderation — TG News Bot{% endblock %}
+{% block content %}
+<h1>Moderation Queue</h1>
+
+{% for post in posts %}
+<div class="card">
+    <div class="card-header">
+        <span class="badge badge-pending">pending</span>
+        <strong>@{{ post.channel_username }}</strong>
+        <span class="item-date">{{ post.created_at }}</span>
+    </div>
+
+    {% if post.original_text %}
+    <div class="card-body">
+        <div class="text-section">
+            <h4>Original</h4>
+            <p class="original-text">{{ post.original_text }}</p>
+        </div>
+        {% if post.paraphrased_text %}
+        <div class="text-section">
+            <h4>Paraphrased</h4>
+            <p class="paraphrased-text">{{ post.paraphrased_text }}</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if post.media_type == 'photo' %}
+    <span class="media-badge">📷 Photo</span>
+    {% elif post.media_type == 'video' %}
+    <span class="media-badge">🎬 Video</span>
+    {% elif post.media_type == 'document' %}
+    <span class="media-badge">📎 Document</span>
+    {% endif %}
+
+    <div class="card-actions">
+        <form method="post" action="/moderation/approve/{{ post.id }}" style="display:inline">
+            <button type="submit" class="btn btn-success">✅ Approve & Publish</button>
+        </form>
+        <form method="post" action="/moderation/skip/{{ post.id }}" style="display:inline">
+            <button type="submit" class="btn btn-secondary">Skip</button>
+        </form>
+        <form method="post" action="/moderation/edit/{{ post.id }}" style="display:inline" class="edit-form">
+            <input type="text" name="paraphrased_text" value="{{ post.paraphrased_text or post.original_text }}"
+                   class="edit-input" placeholder="Edit text...">
+            <button type="submit" class="btn btn-primary">✏️ Save & Publish</button>
+        </form>
+    </div>
+</div>
+{% endfor %}
+
+{% if not posts %}
+<div class="empty-state">
+    <div class="empty-icon">✅</div>
+    <h3>No pending posts</h3>
+    <p>Posts from monitored channels will appear here for moderation.</p>
+</div>
+{% endif %}
+
+{% if posts|length == 20 %}
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="/moderation?page={{ page - 1 }}" class="btn btn-secondary">← Prev</a>
+    {% endif %}
+    <span style="color: var(--text-dim); font-size: 13px;">Page {{ page }}</span>
+    <a href="/moderation?page={{ page + 1 }}" class="btn btn-secondary">Next →</a>
+</div>
+{% endif %}
+{% endblock %}

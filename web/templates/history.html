@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}History — TG News Bot{% endblock %}
+{% block content %}
+<h1>History</h1>
+
+<div class="tabs">
+    <a href="/history?status=published" class="tab {% if current_status == 'published' %}active{% endif %}">Published</a>
+    <a href="/history?status=skipped" class="tab {% if current_status == 'skipped' %}active{% endif %}">Skipped</a>
+    <a href="/history?status=error" class="tab {% if current_status == 'error' %}active{% endif %}">Errors</a>
+    <a href="/history?status=" class="tab {% if not current_status %}active{% endif %}">All</a>
+</div>
+
+<div class="panel">
+    {% for post in posts %}
+    <div class="list-item">
+        <span class="badge badge-{{ post.status }}">{{ post.status }}</span>
+        <span class="item-channel">@{{ post.channel_username }}</span>
+        <span class="item-text">
+            {{ (post.paraphrased_text or post.original_text)[:100] }}
+            {% if (post.paraphrased_text or post.original_text)|length > 100 %}...{% endif %}
+        </span>
+        <span class="item-date">{{ post.published_at or post.created_at }}</span>
+        {% if post.media_type %}
+        <span class="media-badge">{{ post.media_type }}</span>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    {% if not posts %}
+    <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h3>No posts found</h3>
+        <p>Published posts will appear here.</p>
+    </div>
+    {% endif %}
+</div>
+
+{% if posts|length == 20 %}
+<div class="pagination">
+    {% if page > 1 %}
+    <a href="/history?status={{ current_status }}&page={{ page - 1 }}" class="btn btn-secondary">← Prev</a>
+    {% endif %}
+    <span style="color: var(--text-dim); font-size: 13px;">Page {{ page }}</span>
+    <a href="/history?status={{ current_status }}&page={{ page + 1 }}" class="btn btn-secondary">Next →</a>
+</div>
+{% endif %}
+{% endblock %}

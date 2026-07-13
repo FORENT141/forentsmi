@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+data/bot.db
+data/bot.db-wal
+data/bot.db-shm
+data/media/
+*.session
+*.session-journal
+.mimocode/

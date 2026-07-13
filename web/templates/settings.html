@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Settings — TG News Bot{% endblock %}
+{% block content %}
+<h1>Settings</h1>
+
+<form method="post" action="/settings">
+    <div class="panel">
+        <h3><span class="icon">🤖</span> Bot Configuration</h3>
+        <div class="form-group">
+            <label>Bot Token</label>
+            <div class="token-group">
+                <input type="password" name="bot_token" id="bot_token"
+                       value="{{ settings.bot_token }}"
+                       placeholder="1234567890:ABCdefGHIjklMNOpqrsTUVwxyz">
+                <button type="button" class="token-toggle" onclick="toggleToken()">👁️</button>
+            </div>
+            <small>Token from @BotFather. Changing this will restart the bot.</small>
+        </div>
+        <div class="form-group">
+            <label>Telegram API ID</label>
+            <input type="text" name="telegram_api_id" value="{{ settings.telegram_api_id }}"
+                   placeholder="12345678">
+            <small>Get from <a href="https://my.telegram.org" target="_blank" style="color: var(--accent-light);">my.telegram.org</a></small>
+        </div>
+        <div class="form-group">
+            <label>Telegram API Hash</label>
+            <input type="password" name="telegram_api_hash" value="{{ settings.telegram_api_hash }}"
+                   placeholder="your_api_hash_here">
+        </div>
+    </div>
+
+    <div class="panel">
+        <h3><span class="icon">📡</span> Publishing</h3>
+        <div class="form-group">
+            <label>Target Channel</label>
+            <input type="text" name="target_channel" value="{{ settings.target_channel }}"
+                   placeholder="my_channel">
+            <small>Channel where posts will be published (without @)</small>
+        </div>
+        <div class="form-group">
+            <label class="checkbox-label">
+                <input type="checkbox" name="auto_publish" {% if settings.auto_publish == '1' %}checked{% endif %}>
+                Auto-publish (skip moderation)
+            </label>
+        </div>
+        <div class="form-group">
+            <label>Check Interval (seconds)</label>
+            <input type="number" name="check_interval" value="{{ settings.check_interval }}" min="30">
+            <small>How often to check for new posts</small>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h3><span class="icon">🧠</span> LLM Paraphrase Settings</h3>
+        <div class="form-group">
+            <label>OpenAI API Key</label>
+            <div class="token-group">
+                <input type="password" name="openai_api_key" id="openai_key"
+                       value="{{ settings.openai_api_key }}"
+                       placeholder="sk-...">
+                <button type="button" class="token-toggle" onclick="toggleKey()">👁️</button>
+            </div>
+            <small>Used for text paraphrasing. Leave empty to skip paraphrasing.</small>
+        </div>
+        <div class="form-group">
+            <label>Model</label>
+            <input type="text" name="openai_model" value="{{ settings.openai_model }}"
+                   placeholder="gpt-4o-mini">
+        </div>
+        <div class="form-group">
+            <label>Paraphrase Prompt</label>
+            <textarea name="paraphrase_prompt" rows="5">{{ settings.paraphrase_prompt }}</textarea>
+            <small>System prompt for LLM text paraphrasing</small>
+        </div>
+    </div>
+
+    <div class="save-area">
+        <button type="submit" class="btn btn-primary">💾 Save Settings</button>
+    </div>
+</form>
+
+<script>
+function toggleToken() {
+    const input = document.getElementById('bot_token');
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+function toggleKey() {
+    const input = document.getElementById('openai_key');
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+</script>
+{% endblock %}

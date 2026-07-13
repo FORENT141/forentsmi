@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — TG News Bot{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">📡</div>
+        <div class="stat-value">{{ stats.channels }}</div>
+        <div class="stat-label">Channels</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">📄</div>
+        <div class="stat-value">{{ stats.total_posts }}</div>
+        <div class="stat-label">Total Posts</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">✅</div>
+        <div class="stat-value">{{ stats.published }}</div>
+        <div class="stat-label">Published</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-value">{{ stats.pending }}</div>
+        <div class="stat-label">Pending</div>
+    </div>
+</div>
+
+{% if stats.by_channel %}
+<div class="panel">
+    <h3><span class="icon">📊</span> Posts by Channel</h3>
+    {% for ch in stats.by_channel %}
+    <div class="bar-row">
+        <span class="bar-label">@{{ ch.channel_username }}</span>
+        <div class="bar" style="width: {{ [ch.cnt * 5, 100] | min }}%">{{ ch.cnt }}</div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="panel">
+    <h3><span class="icon">📋</span> Recent Activity</h3>
+    {% for p in recent %}
+    <div class="list-item">
+        <span class="badge badge-{{ p.status }}">{{ p.status }}</span>
+        <span class="item-channel">@{{ p.channel_username }}</span>
+        <span class="item-text">{{ p.original_text[:80] }}{% if p.original_text|length > 80 %}...{% endif %}</span>
+        <span class="item-date">{{ p.created_at }}</span>
+    </div>
+    {% endfor %}
+    {% if not recent %}
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h3>No posts yet</h3>
+        <p>Add channels and start monitoring to see activity here.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
