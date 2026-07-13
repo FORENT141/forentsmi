@@ -1,6 +1,5 @@
 import logging
 import httpx
-from pathlib import Path
 
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -10,19 +9,29 @@ import db
 
 logger = logging.getLogger("paraphrase")
 
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+OPENAI_URL = "https://api.openai.com/v1/chat/completions"
+
+
+def _get_api_url(key: str) -> str:
+    if key.startswith("sk-or-"):
+        return OPENROUTER_URL
+    return OPENAI_URL
+
 
 async def paraphrase_text(text: str) -> str:
     api_key = await db.get_setting("openai_api_key") or OPENAI_API_KEY
-    if not api_key or not text.strip() or api_key.startswith("sk-test"):
+    if not api_key or not text.strip():
         return text
 
     model = await db.get_setting("openai_model") or OPENAI_MODEL
     prompt = await db.get_setting("paraphrase_prompt")
+    url = _get_api_url(api_key)
 
     try:
         async with httpx.AsyncClient(timeout=30) as client:
             resp = await client.post(
-                "https://api.openai.com/v1/chat/completions",
+                url,
                 headers={"Authorization": f"Bearer {api_key}"},
                 json={
                     "model": model,
@@ -64,7 +73,7 @@ async def paraphrase_and_publish(post_id: int):
             media_path=post["media_path"],
             media_type=post["media_type"],
         )
-        await db.update_post(post_id, status="published", published_at=dt.utcnow().isoformat())
+        await db.update_post(post_id, status="published", published_at=dt.utcnow().isoformat(), error="")
     except Exception as e:
         logger.error(f"Publish error for post #{post_id}: {e}")
         await db.update_post(post_id, status="error", error=str(e))
